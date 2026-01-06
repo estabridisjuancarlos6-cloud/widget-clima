@@ -1,0 +1,27 @@
+{
+  "sunColor": "#f28c28",
+  "cloudColor": "#1f3c88",
+  "iconSize": 80,
+  "strokeWidth": 2.6,
+  "dayFontSize": 34,
+  "tempFontSize": 26,
+  "dayWeight": "600",
+  "tempWeight": "400",
+  "days": [
+    {
+      "label": "Martes",
+      "max": "15",
+      "min": "9"
+    },
+    {
+      "label": "Miércoles",
+      "max": "15",
+      "min": "9"
+    },
+    {
+      "label": "Jueves",
+      "max": "15",
+      "min": "9"
+    }
+  ]
+}

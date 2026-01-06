@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  font-family: 'BlissPro', 'Bliss', sans-serif;
+}
+
+:root {
+  --sun-color: #F28C28;
+  --cloud-color: #1F3C88;
+  --icon-size: 80px;
+  --stroke-width: 1.4;
+  --day-font-size: 34px;
+  --temp-font-size: 26px;
+  --font-weight-day: 600;
+  --font-weight-temp: 400;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  padding: 6vh 6vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3.5vh;
+}
+
+.icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  margin-right: 5vw;
+  flex-shrink: 0;
+}
+
+.text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.day {
+  font-size: var(--day-font-size);
+  font-weight: var(--font-weight-day);
+  line-height: 1.1;
+}
+
+.temp {
+  margin-top: 0.5vh;
+  font-size: var(--temp-font-size);
+  font-weight: var(--font-weight-temp);
+  line-height: 1.1;
+}
+
+.sun {
+  stroke: var(--sun-color);
+  fill: none;
+  stroke-width: var(--stroke-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cloud {
+  stroke: var(--cloud-color);
+  fill: none;
+  stroke-width: var(--stroke-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <div class="row">
+    <div class="icon" id="icon-0"></div>
+    <div class="text-block">
+      <div class="day" id="day-0"></div>
+      <div class="temp" id="temp-0"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="icon" id="icon-1"></div>
+    <div class="text-block">
+      <div class="day" id="day-1"></div>
+      <div class="temp" id="temp-1"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="icon" id="icon-2"></div>
+    <div class="text-block">
+      <div class="day" id="day-2"></div>
+      <div class="temp" id="temp-2"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function loadConfig() {
+  try {
+    if (location.hash && location.hash.length > 1) {
+      return JSON.parse(decodeURIComponent(location.hash.substring(1)));
+    }
+  } catch (e) {}
+
+  try {
+    const r = await fetch('config.json', { cache: 'no-cache' });
+    if (r.ok) return await r.json();
+  } catch (e) {}
+
+  return {};
+}
+
+function iconSVG() {
+  return `
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <!-- sol -->
+    <circle cx="22" cy="22" r="6" class="sun"/>
+    <line x1="22" y1="10" x2="22" y2="6" class="sun"/>
+    <line x1="22" y1="38" x2="22" y2="42" class="sun"/>
+    <line x1="10" y1="22" x2="6" y2="22" class="sun"/>
+    <line x1="38" y1="22" x2="42" y2="22" class="sun"/>
+    <line x1="13" y1="13" x2="10" y2="10" class="sun"/>
+    <line x1="31" y1="31" x2="34" y2="34" class="sun"/>
+    <line x1="13" y1="31" x2="10" y2="34" class="sun"/>
+    <line x1="31" y1="13" x2="34" y2="10" class="sun"/>
+
+    <!-- nube -->
+    <path class="cloud" d="
+      M40 36
+      H22
+      C17 36 14 33 14 29
+      C14 25 17 22 21 22
+      C22 18 26 15 31 15
+      C36 15 40 18 41 22
+      H42
+      C46 22 49 25 49 29
+      C49 33 46 36 40 36
+      Z
+    "/>
+  </svg>`;
+}
+
+function render(cfg) {
+  if (!cfg.days) return;
+
+  if (cfg.sunColor) document.documentElement.style.setProperty('--sun-color', cfg.sunColor);
+  if (cfg.cloudColor) document.documentElement.style.setProperty('--cloud-color', cfg.cloudColor);
+  if (cfg.iconSize) document.documentElement.style.setProperty('--icon-size', cfg.iconSize + 'px');
+  if (cfg.strokeWidth) document.documentElement.style.setProperty('--stroke-width', cfg.strokeWidth);
+  if (cfg.dayFontSize) document.documentElement.style.setProperty('--day-font-size', cfg.dayFontSize + 'px');
+  if (cfg.tempFontSize) document.documentElement.style.setProperty('--temp-font-size', cfg.tempFontSize + 'px');
+  if (cfg.dayWeight) document.documentElement.style.setProperty('--font-weight-day', cfg.dayWeight);
+  if (cfg.tempWeight) document.documentElement.style.setProperty('--font-weight-temp', cfg.tempWeight);
+
+  cfg.days.forEach((d, i) => {
+    document.getElementById('day-' + i).textContent = d.label;
+    document.getElementById('temp-' + i).textContent = `${d.max}° C / ${d.min}° C`;
+    document.getElementById('icon-' + i).innerHTML = iconSVG();
+  });
+}
+
+(async () => {
+  const cfg = await loadConfig();
+  render(cfg);
+})();
+</script>
+
+</body>
+</html>
