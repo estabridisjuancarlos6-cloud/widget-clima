@@ -10,18 +10,21 @@
   "days": [
     {
       "label": "Martes",
+      "min": "9",
       "max": "15",
-      "min": "9"
+      "icon": "sunny"
     },
     {
       "label": "Miércoles",
-      "max": "15",
-      "min": "9"
+      "min": "8",
+      "max": "14",
+      "icon": "cloudy"
     },
     {
       "label": "Jueves",
-      "max": "15",
-      "min": "9"
+      "min": "7",
+      "max": "13",
+      "icon": "rain"
     }
   ]
 }
