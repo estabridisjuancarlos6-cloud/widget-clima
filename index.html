@@ -30,35 +30,27 @@
       --font-weight-temp: 400;
     }
 
-    /* CONTENEDOR CENTRADO TOTAL */
     .wrapper {
       width: 100%;
       height: 100%;
-      padding: 0;
-      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      justify-content: center;   /* vertical */
-      align-items: center;       /* horizontal */
+      justify-content: center;
+      align-items: center;
     }
 
-    /* CADA FILA */
     .row {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      width: 60%;                /* controla qué tan ancho ocupa */
-      margin-bottom: 5vh;
       justify-content: center;
+      width: 60%;
+      margin-bottom: 5vh;
     }
 
     .icon {
       width: var(--icon-size);
       height: var(--icon-size);
       margin-right: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       flex-shrink: 0;
     }
 
@@ -174,41 +166,63 @@
   </div>
 
   <script>
-    async function loadConfig() {
-      try {
-        if (location.hash && location.hash.length > 1) {
-          return JSON.parse(decodeURIComponent(location.hash.substring(1)));
-        }
-      } catch (e) { }
+    const API_URL =
+      'https://api.open-meteo.com/v1/forecast' +
+      '?latitude=-12.0464' +
+      '&longitude=-77.0428' +
+      '&daily=temperature_2m_max,temperature_2m_min,weathercode' +
+      '&timezone=auto';
 
-      try {
-        const r = await fetch('config.json', { cache: 'no-cache' });
-        if (r.ok) return await r.json();
-      } catch (e) { }
+    const DAYS_ES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-      return {};
+    function getDayName(dateStr) {
+      const d = new Date(dateStr + "T12:00:00"); // 👈 clave
+      return DAYS_ES[d.getDay()];
     }
 
-    function getIcon(icon) {
-      return `icons/${icon}.png`;
+    function mapIcon(code) {
+      if (code === 0) return 'sunny';
+      if (code === 1 || code === 2) return 'partly-cloudy';
+      if (code === 3 || code === 45 || code === 48) return 'cloudy';
+      if (code >= 51 && code <= 55) return 'llovizna';
+      if (
+        (code >= 61 && code <= 65) ||
+        (code >= 80 && code <= 82)
+      ) return 'rain';
+
+      return 'cloudy'; // fallback
     }
 
-    function render(cfg) {
-      if (!cfg.days) return;
+    function getIcon(name) {
+      return `icons/${name}.png`;
+    }
 
-      cfg.days.forEach((d, i) => {
-        document.getElementById('day-' + i).textContent = d.label;
-        document.getElementById('temp-max-' + i).textContent = `${d.max}° C`;
-        document.getElementById('temp-min-' + i).textContent = `${d.min}° C`;
+    function renderFromMeteo(data) {
+      const daily = data.daily;
+
+      for (let i = 0; i < 3; i++) {
+        document.getElementById('day-' + i).textContent =
+          getDayName(daily.time[i]);
+
+        document.getElementById('temp-max-' + i).textContent =
+          Math.round(daily.temperature_2m_max[i]) + '° C';
+
+        document.getElementById('temp-min-' + i).textContent =
+          Math.round(daily.temperature_2m_min[i]) + '° C';
 
         document.getElementById('icon-' + i).innerHTML =
-          `<img src="${getIcon(d.icon)}" alt="">`;
-      });
+          `<img src="${getIcon(mapIcon(daily.weathercode[i]))}" alt="">`;
+      }
     }
 
     (async () => {
-      const cfg = await loadConfig();
-      render(cfg);
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        renderFromMeteo(data);
+      } catch (e) {
+        console.error('Error cargando Open-Meteo', e);
+      }
     })();
   </script>
 
