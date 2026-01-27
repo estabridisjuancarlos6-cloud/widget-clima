@@ -24,10 +24,11 @@
 
     :root {
       --icon-size: 120px;
-      --day-font-size: 44px;
-      --temp-font-size: 32px;
+      --day-font-size: 55px;
+      --temp-font-size: 40px;
       --font-weight-day: 600;
       --font-weight-temp: 400;
+      --title-color: #373359;
     }
 
     .wrapper {
@@ -70,10 +71,11 @@
       font-size: var(--day-font-size);
       font-weight: var(--font-weight-day);
       line-height: 1.1;
+      color: var(--title-color);
     }
 
     .temp {
-      margin-top: 6px;
+      margin-top: 30px;
       display: flex;
       align-items: center;
       gap: 14px;
@@ -89,6 +91,7 @@
       font-size: var(--temp-font-size);
       font-weight: var(--font-weight-temp);
       line-height: 1;
+      color: var(--title-color);
     }
 
     .temp-label {
@@ -96,6 +99,7 @@
       margin-top: 2px;
       letter-spacing: 0.08em;
       font-weight: bold;
+      color: var(--title-color);
     }
 
     .temp-sep {
